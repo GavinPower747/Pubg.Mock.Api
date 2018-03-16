@@ -1,17 +1,46 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using Pubg.Api.Models.Participants;
+using Pubg.Api.Models.Telemetry;
+using System.Collections.Generic;
 
 namespace Pubg.Api.Models.Match
 {
     public class Match
     {
-        public string Id { get; set; } = Guid.NewGuid().ToString();
+        [JsonProperty]
+        public string Id { get; set; }
 
-        public MatchAttributes Attributes { get; set; } = new MatchAttributes();
+        [JsonProperty]
+        public string ShardId { get; set; }
 
-        public MatchLinks Links { get; set; } = new MatchLinks();
+        [JsonProperty]
+        public string CreatedAt { get; set; }
 
-        public MatchRelationships Relationships { get; set; } = new MatchRelationships();
+        [JsonProperty]
+        public int Duration { get; set; }
 
-        public string Type => "match";
+        [JsonProperty]
+        public IEnumerable<Roster> Rosters { get; set; }
+
+        [JsonProperty]
+        public Round Rounds { get; set; }
+
+        [JsonProperty]
+        public IEnumerable<Asset> Assets { get; set; }
+
+        [JsonProperty]
+        public PubgMatchStats Stats { get; set; }
+
+        [JsonProperty]
+        public string GameMode { get; set; }
+
+        [JsonProperty]
+        public string PatchVersion { get; set; }
+
+        [JsonProperty]
+        public string TitleId { get; set; }
+
+        [JsonProperty]
+        public Dictionary<string, object> Links { get; set; }
     }
 }

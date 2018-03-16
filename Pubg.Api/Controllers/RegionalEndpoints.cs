@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using Microsoft.AspNetCore.Mvc;
-using Pubg.Api.Models;
 using Pubg.Api.Generators;
 
 namespace Pubg.Api.Controllers
@@ -13,8 +11,7 @@ namespace Pubg.Api.Controllers
         [HttpGet("matches")]
         public IActionResult GetMatches(string shardId)
         {
-            //stub
-            return Ok();
+            return Ok(ResponseGenerator.GenerateMatches(5, 2, shardId));
         }
 
         [HttpGet("matches/{matchId}")]
@@ -25,7 +22,7 @@ namespace Pubg.Api.Controllers
                 return NotFound();
             }
 
-            return Ok(ResponseGenerator.GenerateResponse(2, shardId));
+            return Ok(ResponseGenerator.GenerateMatch(2, shardId));
         }
     }
 }

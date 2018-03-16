@@ -1,71 +1,75 @@
-﻿using Pubg.Api.Models;
-using Pubg.Api.Models.Included;
-using Pubg.Api.Models.Match;
+﻿using Pubg.Api.Models.Match;
+using Pubg.Api.Models.Participants;
+using System;
+using System.Collections.Generic;
 
 namespace Pubg.Api.Generators
 {
     public static class ResponseGenerator
     {
-        public static Response GenerateResponse(int teamSize = 2, string shardId = "pc-eu")
+        public static IEnumerable<Match> GenerateMatches(int amount, int teamSize = 2, string shardId = "pc-eu")
         {
-            var response = new Response();
+            for (int i = 0; i < amount; i++)
+                yield return GenerateMatch(teamSize, shardId);
+        }
 
-            int playerAmount = 100,
-                participantAmount = 100,
-                rosterAmount = playerAmount / teamSize;
-
-            response.Included = new IncludedResource[playerAmount + participantAmount + rosterAmount];
-
-            int i = 0;
-            do { response.Included[i++] = GeneratePlayer(shardId); }
-            while (i < playerAmount);
-
-            do { response.Included[i++] = GenerateParticipant(shardId); }
-            while (i < playerAmount + participantAmount);
-
-            do { response.Included[i++] = GenerateRoster(shardId); }
-            while (i < playerAmount + participantAmount + rosterAmount);
-
-            response.Data = new[]
+        public static Match GenerateMatch(int teamSize = 2, string shardId = "pc-eu")
+        {
+            var response = new Match
             {
-                new Match
-                {
-                    Attributes = new MatchAttributes
-                    {
-                        ShardId = shardId
-                    }
-                }
-            };
-
-
+                Id = Guid.NewGuid().ToString(),
+                CreatedAt = DateTime.UtcNow.ToString("o"),
+                Duration = 1000,
+                PatchVersion = "master",
+                ShardId = shardId,
+                TitleId = "pubg-bluehole",
+                Rosters = GenerateRosters(shardId, teamSize)
+            };           
+            
             return response;
         }
 
-        private static IncludedResource GenerateRoster(string shardId)
+        private static IEnumerable<Roster> GenerateRosters(string shardId, int teamSize)
         {
-            return new IncludedResource
+            int playerAmount = 100,
+                rosterAmount = playerAmount / teamSize;
+
+            int i = 0;
+
+            do
             {
-                Type = "roster",
-                Attributes = new RosterAttributes(shardId)
-            };
+                yield return new Roster
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ShardId = shardId,
+                    Won = false,
+                    Stats = new RosterStats(),
+                    Participants = GenerateParticipants(shardId, teamSize)
+                };
+                i++;
+            }
+            while (i < rosterAmount);            
         }
 
-        private static IncludedResource GeneratePlayer(string shardId)
+        private static IEnumerable<Participant> GenerateParticipants(string shardId, int teamSize)
         {
-            return new IncludedResource
+            for (int i = 0; i < teamSize; i++)
             {
-                Type = "player",
-                Attributes = new PlayerAttributes(shardId)
-            };
-        }
-
-        private static IncludedResource GenerateParticipant(string shardId)
-        {
-            return new IncludedResource
-            {
-                Type = "participant",
-                Attributes = new ParticipantAttributes(shardId)
-            };
+                yield return new Participant()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    ShardId = shardId,
+                    Actor = "",
+                    Stats = new ParticipantStats(),
+                    Player = new Player
+                    {
+                        Id = $"account.{Guid.NewGuid().ToString("N")}",
+                        Name = "TestPlayer",
+                        PatchVersion = "master",
+                        TitleId = "bluehole-pubg"
+                    }
+                };
+            }
         }
     }
 }

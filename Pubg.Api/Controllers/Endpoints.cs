@@ -1,5 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Pubg.Api.Models;
+using Pubg.Api.Models.Status;
 
 namespace Pubg.Api.Controllers
 {
@@ -8,13 +8,7 @@ namespace Pubg.Api.Controllers
         [HttpGet("status")]
         public IActionResult GetStatus()
         {
-            return Ok(new Response
-            {
-                Data = new[] 
-                {
-                    new Status()
-                }
-            });
+            return Ok(new Status());
         }
     }
 }
